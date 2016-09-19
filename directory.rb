@@ -31,7 +31,13 @@ end
 def print(students)
   count = 0
   until count == students.length
-    puts "#{count + 1}. #{students[count][:name]} (#{students[count][:cohort]} cohort) hobby: #{students[count][:hobbies]}, country of birth: #{students[count][:country_of_birth]}, height: #{students[count][:height]}"
+    counter = "#{count + 1}."
+    name = "#{students[count][:name]}"
+    cohort = "#{students[count][:cohort]} cohort"
+    hobby = "#{students[count][:hobbies]}"
+    country = "#{students[count][:country_of_birth]}"
+    height = "#{students[count][:height]}"
+    puts counter + name.center(20) + cohort.center(20) + hobby.center(20) + country.center(20) + height.center(20)
     count += 1
   end
 end
