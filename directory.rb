@@ -10,9 +10,11 @@ end
 
 def print_menu
   puts
-  puts "-------------------------------------------------------"
-  puts "Welcome to the Student Directory. Please make a choice."
-  puts "-------------------------------------------------------"
+  puts "-----------------------------------------------------------"
+  puts "Welcome to the Student Directory. You look lovely today."
+  puts "-----------------------------------------------------------"
+  puts "Please make a choice from the following options:"
+  puts
   puts "1. Input the students"
   puts "2. Show the students"
   puts "3. Save the list to students.csv"
@@ -32,6 +34,8 @@ def process(selection)
   when "4"
     load_students
   when "9"
+    puts "\n*** Goodbye. Have a lovely day! ***"
+    puts
     exit
   else
     puts "I'm sorry, I don't know what you meant. Please try again."
@@ -40,23 +44,24 @@ end
 
 def ask_for_student_name(occasion)
   if occasion == "first time"
-    puts "Please enter the names of the students. After each name we'll ask for some more detail."
-    puts "To finish, just hit return twice"
+    puts "\nPlease enter the name of the first student."
   elsif occasion == "post addition"
     puts
-    puts "Please type in another name, or press return to go back to the menu."
+    puts "Great! Student added. Now please type in another name."
   end
+    puts "Or hit return to go back to the main menu.\n"
   name = STDIN.gets.chomp
 end
 
 def input_students
+  puts "\n*** You chose to input students ***\n"
   name = ask_for_student_name("first time")
   while !name.empty? do
-    puts "Please enter the month of the cohort which they'll be joining, e.g. November"
+    puts "\nPlease enter the month of the cohort which they'll be joining, e.g. November"
     cohort = seek_answer
-    puts "What are their hobbies? (optional)"
+    puts "\nWhat are their hobbies? (optional)"
     hobbies = seek_answer
-    puts "And country of birth? (optional)"
+    puts "\nAnd country of birth? (optional)"
     country_of_birth = seek_answer
     add_student_details(name, cohort, hobbies, country_of_birth)
     show_total_number_students("added")
@@ -87,19 +92,21 @@ def show_total_number_students(occasion)
     prefix = "Overall"
   end
   if @students.count == 1
-    puts "#{prefix} we have #{@students.count} student."
+    puts "\n#{prefix} we have #{@students.count} student."
   else
-    puts "#{prefix} we have #{@students.count} students."
+    puts "\n#{prefix} we have #{@students.count} students."
   end
 end
 
 def show_students
+  puts "\n*** You chose to see the list of students ***"
+  puts
   if @students.count > 0
     print_header
     print_by_cohort
     show_total_number_students("summary")
   else
-    puts "You haven't entered any students."
+    puts "Unfortunately you haven't entered any!"
     puts
   end
 end
@@ -118,6 +125,7 @@ def save_students
     file.puts csv_line
   end
   file.close
+  puts "\n*** Hooray! Successfully saved #{@students.count} students to #{@default_filename} ***"
 end
 
 def load_students(filename = @default_filename )
@@ -127,6 +135,7 @@ def load_students(filename = @default_filename )
     add_student_details(name, cohort, hobbies, country_of_birth)
   end
   file.close
+  puts "\n*** Hooray! Successfully loaded #{@students.count} students from #{filename} ***"
 end
 
 def try_load_students
@@ -137,7 +146,6 @@ def try_load_students
   end
   if File.exists?(filename)
     load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
   else
     puts "Sorry, #{filename} doesn't exist."
     exit
@@ -174,7 +182,7 @@ def print_by_cohort
   cohorts_list = cohorts_list.uniq
   # 3. For each cohort, list the students in it
   cohorts_list.each do |cohort|
-    puts "Students in the #{cohort} cohort: "
+    puts "Students in the #{cohort} cohort:"
     puts
     puts "Name".center(20) + "Hobbies".center(20) + "Country".center(20)
     puts "-----------------------------------------------------------------"
