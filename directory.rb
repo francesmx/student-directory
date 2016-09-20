@@ -3,7 +3,7 @@
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -43,35 +43,29 @@ def input_students
   # create an empty array
   # get the first name
   # Could use gets.gsub(/\n/," ") instead of chomp
-  name = gets.chomp
+  name = STDIN.gets.chomp
   # while the name is not empty, repeat this code
   while !name.empty? do
 
     puts "Please enter the month of the cohort which they'll be joining, e.g. November?"
-    cohort = gets.chomp
+    cohort = STDIN.gets.chomp
     if cohort == ""
       cohort = "None supplied"
     end
 
     puts "And what are their hobbies?"
-    hobbies = gets.chomp
+    hobbies = STDIN.gets.chomp
     if hobbies == ""
       hobbies = "None supplied"
     end
 
     puts "And country of birth?"
-    country_of_birth = gets.chomp
+    country_of_birth = STDIN.gets.chomp
     if country_of_birth == ""
       country_of_birth = "None supplied"
     end
 
-    #add the student hash to the array
-    @students << {
-      name: name,
-      cohort: cohort.to_sym,
-      hobbies: hobbies.to_sym,
-      country_of_birth: country_of_birth.to_sym,
-    }
+    add_student_details(name, cohort, hobbies, country_of_birth)
 
     if @students.count == 1
       puts "Now we have #{@students.count} student."
@@ -81,8 +75,17 @@ def input_students
     # get another name from the user
     puts
     puts "Please type in another name, or press return to go back to the menu."
-    name = gets.chomp
+    name = STDIN.gets.chomp
   end
+end
+
+def add_student_details(name, cohort, hobbies, country_of_birth)
+  @students << {
+    name: name,
+    cohort: cohort.to_sym,
+    hobbies: hobbies.to_sym,
+    country_of_birth: country_of_birth.to_sym,
+  }
 end
 
 def show_students
@@ -108,13 +111,25 @@ def save_students
   file.close
 end
 
-def load_students
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort, hobbies, country_of_birth = line.chomp.split(",")
-    @students << {name: name, cohort: cohort.to_sym, hobbies: hobbies.to_sym, country_of_birth: country_of_birth.to_sym}
+    add_student_details(name, cohort, hobbies, country_of_birth)
   end
   file.close
+end
+
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{@students.count} from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
+  end
 end
 
 def print_header
@@ -170,4 +185,5 @@ def print_footer
   end
 end
 
+try_load_students
 interactive_menu
