@@ -38,43 +38,36 @@ def process(selection)
   end
 end
 
-def input_students
-  puts "Please enter the names of the students. After each name we'll ask for some more detail."
-  puts "To finish, just hit return twice"
-
-  name = STDIN.gets.chomp
-
-  while !name.empty? do
-
-    puts "Please enter the month of the cohort which they'll be joining, e.g. November?"
-    cohort = STDIN.gets.chomp
-    if cohort == ""
-      cohort = "None supplied"
-    end
-
-    puts "And what are their hobbies?"
-    hobbies = STDIN.gets.chomp
-    if hobbies == ""
-      hobbies = "None supplied"
-    end
-
-    puts "And country of birth?"
-    country_of_birth = STDIN.gets.chomp
-    if country_of_birth == ""
-      country_of_birth = "None supplied"
-    end
-
-    add_student_details(name, cohort, hobbies, country_of_birth)
-
-    if @students.count == 1
-      puts "Now we have #{@students.count} student."
-    else
-      puts "Now we have #{@students.count} students."
-    end
-
+def ask_for_student_name(occasion)
+  if occasion == "first time"
+    puts "Please enter the names of the students. After each name we'll ask for some more detail."
+    puts "To finish, just hit return twice"
+  elsif occasion == "post addition"
     puts
     puts "Please type in another name, or press return to go back to the menu."
-    name = STDIN.gets.chomp
+  end
+  name = STDIN.gets.chomp
+end
+
+def input_students
+  name = ask_for_student_name("first time")
+  while !name.empty? do
+    puts "Please enter the month of the cohort which they'll be joining, e.g. November"
+    cohort = seek_answer
+    puts "What are their hobbies? (optional)"
+    hobbies = seek_answer
+    puts "And country of birth? (optional)"
+    country_of_birth = seek_answer
+    add_student_details(name, cohort, hobbies, country_of_birth)
+    show_total_number_students("added")
+    name = ask_for_student_name("post addition")
+  end
+end
+
+def seek_answer
+  return answer_sought = STDIN.gets.chomp
+  if answer_sought.empty?
+    return answer_sought = "None supplied"
   end
 end
 
@@ -87,11 +80,24 @@ def add_student_details(name, cohort, hobbies, country_of_birth)
   }
 end
 
+def show_total_number_students(occasion)
+  if occasion == "added"
+    prefix = "Now"
+  elsif occasion == "summary"
+    prefix = "Overall"
+  end
+  if @students.count == 1
+    puts "#{prefix} we have #{@students.count} student."
+  else
+    puts "#{prefix} we have #{@students.count} students."
+  end
+end
+
 def show_students
   if @students.count > 0
     print_header
     print_by_cohort
-    print_footer
+    show_total_number_students("summary")
   else
     puts "You haven't entered any students."
     puts
@@ -143,6 +149,7 @@ def print_header
   puts "--------------------------------"
 end
 
+# This method is unused but I kept it in in case a different view was needed.
 def print_students
   count = 0
   until count == @students.length
@@ -180,14 +187,6 @@ def print_by_cohort
       end
     end
     puts
-  end
-end
-
-def print_footer
-  if @students.count == 1
-    puts "Overall, we have #{@students.count} great student"
-  elsif @students.count > 1
-    puts "Overall, we have #{@students.count} great students"
   end
 end
 
