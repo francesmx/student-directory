@@ -47,6 +47,32 @@ def input_students
   students
 end
 
+def interactive_menu
+  students = []
+  loop do
+    # 1. Show the menu and ask the user what to do
+    puts "1. Input the students"
+    puts "2. Show the students"
+    puts "9. Exit"
+    # 2. Read the input and save it into a variable
+    selection = gets.chomp
+    # 3. Do what the user has asked
+    case selection
+    when "1"
+      students = input_students
+    when "2"
+      print_header(students)
+      print_by_cohort(students)
+      print_footer(students)
+    when "9"
+      exit
+    else
+      puts "I don't know what you meant. Try again."
+    end
+  end
+end
+
+
 def print_header students
   if students.length >= 1
     puts "The students of Villains Academy"
@@ -113,8 +139,4 @@ def print_footer(students)
   end
 end
 
-students = input_students
-print_header(students)
-#print(students)
-print_by_cohort(students)
-print_footer(students)
+interactive_menu
