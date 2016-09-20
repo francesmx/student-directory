@@ -17,8 +17,8 @@ def print_menu
   puts
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
+  puts "3. Save the list to #{@default_filename}"
+  puts "4. Load the list from #{@default_filename}"
   puts "9. Exit the program"
   puts
 end
@@ -112,8 +112,10 @@ def show_students
 end
 
 def save_students
+  filename = prompt_filename("save")
+
   # Open the file for writing
-  file = File.open(@default_filename, "w")
+  file = File.open(filename, "w")
   # Iterate over the array of students
   @students.each do |student|
     student_data = [
@@ -125,31 +127,71 @@ def save_students
     file.puts csv_line
   end
   file.close
-  puts "\n*** Hooray! Successfully saved #{@students.count} students to #{@default_filename} ***"
+  puts "\n*** Hooray! Successfully saved #{@students.count} students to #{filename} ***"
 end
 
-def load_students(filename = @default_filename )
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
-    name, cohort, hobbies, country_of_birth = line.chomp.split(",")
-    add_student_details(name, cohort, hobbies, country_of_birth)
-  end
-  file.close
-  puts "\n*** Hooray! Successfully loaded #{@students.count} students from #{filename} ***"
-end
-
-def try_load_students
+def load_students
+  # Check first if filename was given from command line.
   if !ARGV.first.nil?
     filename = ARGV.first
   else
-    filename = @default_filename
+    filename = prompt_filename("load")
   end
+
+  # Check file exists. If so, load data from it. If not, exit.
   if File.exists?(filename)
-    load_students(filename)
+    file = File.open(filename, "r")
+    file.readlines.each do |line|
+      name, cohort, hobbies, country_of_birth = line.chomp.split(",")
+      add_student_details(name, cohort, hobbies, country_of_birth)
+    end
+    file.close
+    puts "\n*** Hooray! Successfully loaded #{@students.count} students from #{filename} ***"
   else
     puts "Sorry, #{filename} doesn't exist."
     exit
   end
+end
+
+def prompt_filename(occasion)
+
+  if occasion == "save"
+    prefix = "Save"
+    from_or_to = "to"
+
+  elsif occasion == "load"
+    prefix = "Load"
+    from_or_to = "from"
+  end
+
+  # Prompt user to confirm default file or enter a new one.
+  puts "#{prefix} data #{from_or_to} #{@default_filename}? Type yes or no."
+  response = STDIN.gets.chomp.downcase
+
+  if response == "yes"
+    filename = @default_filename
+
+  elsif response == "no"
+    puts "Please enter the name of the csv file you'd like to #{prefix.downcase} #{from_or_to} (including the .csv extension)"
+    filename = STDIN.gets.chomp
+
+    puts "Would you like us to make this the default file for student records? Type yes or no."
+    change_default = STDIN.gets.chomp.downcase
+
+    if change_default == "yes"
+      @default_filename = filename
+      puts "Thank you. The default filename is now #{@default_filename}."
+
+    elsif change_default == "no"
+      "Okay - we'll just do this as a one off then :)"
+    end
+
+  else
+    puts "I'm sorry, I didn't understand what you typed."
+    exit
+  end
+
+  return filename
 end
 
 def print_header
@@ -198,5 +240,5 @@ def print_by_cohort
   end
 end
 
-try_load_students
+load_students
 interactive_menu
