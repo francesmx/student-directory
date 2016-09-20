@@ -1,4 +1,5 @@
 @students = []
+@default_filename = "students.csv"
 
 def interactive_menu
   loop do
@@ -40,11 +41,9 @@ end
 def input_students
   puts "Please enter the names of the students. After each name we'll ask for some more detail."
   puts "To finish, just hit return twice"
-  # create an empty array
-  # get the first name
-  # Could use gets.gsub(/\n/," ") instead of chomp
+
   name = STDIN.gets.chomp
-  # while the name is not empty, repeat this code
+
   while !name.empty? do
 
     puts "Please enter the month of the cohort which they'll be joining, e.g. November?"
@@ -72,7 +71,7 @@ def input_students
     else
       puts "Now we have #{@students.count} students."
     end
-    # get another name from the user
+
     puts
     puts "Please type in another name, or press return to go back to the menu."
     name = STDIN.gets.chomp
@@ -101,17 +100,21 @@ end
 
 def save_students
   # Open the file for writing
-  file = File.open("students.csv", "w")
+  file = File.open(@default_filename, "w")
   # Iterate over the array of students
   @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:hobbies], student[:country_of_birth]]
+    student_data = [
+      student[:name],
+      student[:cohort],
+      student[:hobbies],
+      student[:country_of_birth]]
     csv_line = student_data.join(",")
     file.puts csv_line
   end
   file.close
 end
 
-def load_students(filename = "students.csv")
+def load_students(filename = @default_filename )
   file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort, hobbies, country_of_birth = line.chomp.split(",")
@@ -121,8 +124,11 @@ def load_students(filename = "students.csv")
 end
 
 def try_load_students
-  filename = ARGV.first
-  return if filename.nil?
+  if !ARGV.first.nil?
+    filename = ARGV.first
+  else
+    filename = @default_filename
+  end
   if File.exists?(filename)
     load_students(filename)
     puts "Loaded #{@students.count} from #{filename}"
