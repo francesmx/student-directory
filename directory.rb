@@ -55,6 +55,7 @@ def print_menu
   puts "-------------------------------------------------------"
   puts "1. Input the students"
   puts "2. Show the students"
+  puts "3. Save the list to students.csv"
   puts "9. Exit the program"
   puts
 end
@@ -70,12 +71,26 @@ def show_students
   end
 end
 
+def save_students
+  # Open the file for writing
+  file = File.open("students.csv", "w")
+  # Iterate over the array of students
+  @students.each do |student|
+    student_data = [student[:name], student[:cohort], student[:hobbies], student[:country_of_birth]]
+    csv_line = student_data.join(",")
+    file.puts csv_line
+  end
+  file.close
+end
+
 def process(selection)
   case selection
   when "1"
     input_students
   when "2"
     show_students
+  when "3"
+    save_students
   when "9"
     exit
   else
