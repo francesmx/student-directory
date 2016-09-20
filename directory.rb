@@ -1,5 +1,42 @@
 @students = []
 
+def interactive_menu
+  loop do
+    print_menu
+    process(gets.chomp)
+  end
+end
+
+def print_menu
+  puts
+  puts "-------------------------------------------------------"
+  puts "Welcome to the Student Directory. Please make a choice."
+  puts "-------------------------------------------------------"
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
+  puts "9. Exit the program"
+  puts
+end
+
+def process(selection)
+  case selection
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "3"
+    save_students
+  when "4"
+    load_students
+  when "9"
+    exit
+  else
+    puts "I'm sorry, I don't know what you meant. Please try again."
+  end
+end
+
 def input_students
   puts "Please enter the names of the students. After each name we'll ask for some more detail."
   puts "To finish, just hit return twice"
@@ -48,18 +85,6 @@ def input_students
   end
 end
 
-def print_menu
-  puts
-  puts "-------------------------------------------------------"
-  puts "Welcome to the Student Directory. Please make a choice."
-  puts "-------------------------------------------------------"
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "9. Exit the program"
-  puts
-end
-
 def show_students
   if @students.count > 0
     print_header
@@ -83,26 +108,13 @@ def save_students
   file.close
 end
 
-def process(selection)
-  case selection
-  when "1"
-    input_students
-  when "2"
-    show_students
-  when "3"
-    save_students
-  when "9"
-    exit
-  else
-    puts "I'm sorry, I don't know what you meant. Please try again."
+def load_students
+  file = File.open("students.csv", "r")
+  file.readlines.each do |line|
+    name, cohort, hobbies, country_of_birth = line.chomp.split(",")
+    @students << {name: name, cohort: cohort.to_sym, hobbies: hobbies.to_sym, country_of_birth: country_of_birth.to_sym}
   end
-end
-
-def interactive_menu
-  loop do
-    print_menu
-    process(gets.chomp)
-  end
+  file.close
 end
 
 def print_header
@@ -110,7 +122,7 @@ def print_header
   puts "--------------------------------"
 end
 
-def print
+def print_students
   count = 0
   until count == @students.length
     counter = "#{count + 1}."
