@@ -4,6 +4,7 @@ def input_students
   # create an empty array
   students = []
   # get the first name
+  # Could use gets.gsub(/\n/," ") instead of chomp
   name = gets.chomp
   # while the name is not empty, repeat this code
   while !name.empty? do
@@ -33,7 +34,12 @@ def input_students
       hobbies: hobbies.to_sym,
       country_of_birth: country_of_birth.to_sym,
     }
-    puts "Now we have #{students.count} students"
+
+    if students.count == 1
+      puts "Now we have #{students.count} student"
+    else
+      puts "Now we have #{students.count} students"
+    end
     # get another name from the user
     name = gets.chomp
   end
@@ -41,29 +47,74 @@ def input_students
   students
 end
 
-def print_header
-  puts "The students of Villains Academy"
-  puts "--------------------------------"
-end
-
-def print(students)
-  count = 0
-  until count == students.length
-    counter = "#{count + 1}."
-    name = "#{students[count][:name]}"
-    cohort = "#{students[count][:cohort]} cohort"
-    hobby = "#{students[count][:hobbies]}"
-    country = "#{students[count][:country_of_birth]}"
-    puts counter + name.center(20) + cohort.center(20) + hobby.center(20) + country.center(20)
-    count += 1
+def print_header students
+  if students.length >= 1
+    puts "The students of Villains Academy"
+    puts "--------------------------------"
   end
 end
 
-def print_footer(names)
-  puts "Overall, we have #{names.count} great students"
+def print(students)
+
+  if students.length >= 1
+    count = 0
+    until count == students.length
+      counter = "#{count + 1}."
+      name = "#{students[count][:name]}"
+      cohort = "#{students[count][:cohort]} cohort"
+      hobby = "#{students[count][:hobbies]}"
+      country = "#{students[count][:country_of_birth]}"
+      puts counter.center(5) + name.center(15) + cohort.center(15) + hobby.center(15) + country.center(15)
+      count += 1
+    end
+  else
+    puts "You haven't entered any students."
+  end
+end
+
+def print_by_cohort(students)
+  if students.length >= 1
+    # 1. Find all the cohorts in the array
+    cohorts_list = []
+    students.each do |student|
+      cohorts_list << student[:cohort].to_s
+    end
+    # 2. Remove duplicates
+    cohorts_list = cohorts_list.uniq
+    # 3. For each cohort, list the students in it
+    cohorts_list.each do |cohort|
+      puts "Students in the #{cohort} cohort: "
+      puts
+      puts "Name".center(20) + "Hobbies".center(20) + "Country".center(20)
+      puts "-----------------------------------------------------------------"
+      students.each do |student|
+        if student[:cohort].to_s == cohort
+          name = "#{student[:name]}"
+          hobby = "#{student[:hobbies]}"
+          country = "#{student[:country_of_birth]}"
+
+          puts name.center(20) + hobby.center(20) + country.center(20)
+        end
+      end
+      puts
+    end
+  else
+    puts "You haven't entered any students."
+  end
+end
+
+def print_footer(students)
+  if students.length >= 1
+    if students.count == 1
+      puts "Overall, we have #{students.count} great student"
+    elsif students.count > 1
+      puts "Overall, we have #{students.count} great students"
+    end
+  end
 end
 
 students = input_students
-print_header
-print(students)
+print_header(students)
+#print(students)
+print_by_cohort(students)
 print_footer(students)
