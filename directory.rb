@@ -1,3 +1,4 @@
+require "csv"
 @students = []
 @default_filename = "students.csv"
 
@@ -17,8 +18,8 @@ def print_menu
   puts
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to #{@default_filename}"
-  puts "4. Load the list from #{@default_filename}"
+  puts "3. Save the list to #{@default_filename} or another file"
+  puts "4. Load the list from #{@default_filename} or another file"
   puts "9. Exit the program"
   puts
 end
@@ -113,20 +114,15 @@ end
 
 def save_students
   filename = prompt_filename("save")
-
-  # Open the file for writing
-  file = File.open(filename, "w")
-  # Iterate over the array of students
-  @students.each do |student|
-    student_data = [
-      student[:name],
-      student[:cohort],
-      student[:hobbies],
-      student[:country_of_birth]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  CSV.open(filename, "w") do |csv|
+    @students.each do |student|
+      csv << student_data = [
+        student[:name],
+        student[:cohort],
+        student[:hobbies],
+        student[:country_of_birth]]
+    end
   end
-  file.close
   puts "\n*** Hooray! Successfully saved #{@students.count} students to #{filename} ***"
 end
 
@@ -140,12 +136,9 @@ def load_students
 
   # Check file exists. If so, load data from it. If not, exit.
   if File.exists?(filename)
-    file = File.open(filename, "r")
-    file.readlines.each do |line|
-      name, cohort, hobbies, country_of_birth = line.chomp.split(",")
-      add_student_details(name, cohort, hobbies, country_of_birth)
+    CSV.open(filename, "rb").read.each do |csv|
+      add_student_details(csv[0], csv[1], csv[2], csv[3])
     end
-    file.close
     puts "\n*** Hooray! Successfully loaded #{@students.count} students from #{filename} ***"
   else
     puts "Sorry, #{filename} doesn't exist."
